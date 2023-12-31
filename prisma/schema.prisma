@@ -1,12 +1,16 @@
+//generator
 generator client {
   provider = "prisma-client-js"
 }
 
+//data source
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
+
+//models
 
 model Profile {
   id       String @id @default(uuid())
