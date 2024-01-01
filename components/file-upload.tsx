@@ -21,6 +21,7 @@ const FileUpload = ({ endpoint, value, onChange }: FileUploadProp) => {
           fill
           loading='lazy'
           src={value}
+          blurDataURL={value}
           alt='upload'
           className='rounded-full'
         />
