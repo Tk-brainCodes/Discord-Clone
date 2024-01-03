@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -16,7 +18,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,6 +38,7 @@ const formSchema = z.object({
 
 const InitialModal = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -52,8 +54,15 @@ const InitialModal = () => {
 
   const isLoading = form.formState.isLoading;
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      await axios.post("/api/server", values);
+      form.reset();
+      router.refresh();
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   if (!isMounted) {
@@ -117,7 +126,7 @@ const InitialModal = () => {
             </div>
             <DialogFooter className='bg-gray-100 px-6 py-4 mt-4'>
               <Button variant='primary' disabled={isLoading}>
-                Create
+                {isLoading === true ? "Creating" : "Create"}
               </Button>
             </DialogFooter>
           </form>
