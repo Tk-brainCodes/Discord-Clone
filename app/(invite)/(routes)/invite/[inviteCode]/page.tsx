@@ -19,7 +19,7 @@ const InviteCode = async ({ params }: InviteCodeProps) => {
   }
 
   if (!params.inviteCode) {
-    redirect("/");
+    return redirect("/");
   }
 
   const existingServer = await db.server.findFirst({
@@ -34,10 +34,23 @@ const InviteCode = async ({ params }: InviteCodeProps) => {
   });
 
   if (existingServer) {
-    redirect(`/servers/${existingServer.id}`);
+    return redirect(`/servers/${existingServer.id}`);
   }
 
-  return <div>InviteCode</div>;
+  const server = await db.server.update({
+    where: { inviteCode: params.inviteCode },
+    data: {
+      members: {
+        create: [{ profileId: profile.id }],
+      },
+    },
+  });
+
+  if (server) {
+    return redirect(`/servers/${server.id}`);
+  }
+
+  return null;
 };
 
 export default InviteCode;
