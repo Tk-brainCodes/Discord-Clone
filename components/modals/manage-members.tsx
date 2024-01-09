@@ -105,7 +105,7 @@ const MembersModal = () => {
                         </DropdownMenuSub>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                          <Gavel className='w-4 h-4 ml-2' />
+                          <Gavel className='w-4 h-4 mr-2' />
                           Kick
                         </DropdownMenuItem>
                       </DropdownMenuContent>
