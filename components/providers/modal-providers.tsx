@@ -6,6 +6,7 @@ import EditServerModal from "@/components/modals/edit-server-modal";
 import ManageMembers from "@/components/modals/manage-members";
 import CreateChannelModal from "@/components/modals/create-channel";
 import LeaveChannel from "@/components/modals/leave-channel";
+import DeleteServer from "@/components/modals/delete-server";
 import { useState, useEffect } from "react";
 
 export const ModalProvider = () => {
@@ -27,6 +28,7 @@ export const ModalProvider = () => {
       <ManageMembers />
       <CreateChannelModal />
       <LeaveChannel />
+      <DeleteServer />
     </>
   );
 };
