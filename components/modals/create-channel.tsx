@@ -131,7 +131,7 @@ const CreateChannelModal = () => {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className='bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0'>
                           <SelectValue placeholder='Select a channel type' />
                         </SelectTrigger>
                       </FormControl>
