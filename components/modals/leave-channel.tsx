@@ -23,7 +23,7 @@ const LeaveChannel = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const onConfirmDelete = async () => {
+  const onConfirmLeave = async () => {
     try {
       setIsLoading(true);
 
@@ -62,7 +62,7 @@ const LeaveChannel = () => {
             <Button
               disabled={isLoading}
               variant='primary'
-              onClick={onConfirmDelete}
+              onClick={onConfirmLeave}
             >
               Confirm
             </Button>
