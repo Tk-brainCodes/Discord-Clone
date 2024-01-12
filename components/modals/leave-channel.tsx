@@ -14,7 +14,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { NextResponse } from "next/server";
 
 const LeaveChannel = () => {
   const { isOpen, type, onClose, data } = useModal();
@@ -28,7 +27,7 @@ const LeaveChannel = () => {
     try {
       setIsLoading(true);
 
-      await axios.patch(`/api/server/${server?.id}/leave`);
+      await axios.patch(`/api/servers/${server?.id}/leave`);
 
       onClose();
       router.refresh();
