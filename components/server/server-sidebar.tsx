@@ -6,9 +6,12 @@ import { db } from "@/lib/db";
 import { ChannelType, MemberRole } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Hash, Mic, Video, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 import ServerHeader from "./server-header";
 import ServerSearch from "./server-search";
+import ServerSection from "./server-section";
+import ServerChannel from "./server-channel";
 
 interface ServerSideProps {
   serverId: string;
@@ -126,9 +129,40 @@ const SeverSidebar = async ({ serverId }: ServerSideProps) => {
             ]}
           />
         </div>
+        <Separator className='bg-zinc-200 dark:bg-zinc-600 rounded-md my-2' />
+
+        {!!textChannel?.length && (
+          <div className='mb-2'>
+            <ServerSection
+              sectionType='channels'
+              channelType={ChannelType.TEXT}
+              role={role}
+              label='Text Channel'
+            />
+            {textChannel.map((channel) => (
+              <>
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  server={server}
+                  role={role}
+                />
+              </>
+            ))}
+          </div>
+        )}
+        {!!audioChannel?.length && (
+          <div className='mb-2'>
+            <ServerSection
+              sectionType='channels'
+              channelType={ChannelType.AUDIO}
+              role={role}
+              label='Audio Channel'
+            />
+          </div>
+        )}
       </ScrollArea>
     </div>
   );
 };
-
 export default SeverSidebar;
