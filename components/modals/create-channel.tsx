@@ -74,8 +74,6 @@ const CreateChannelModal = () => {
     }
   }, [channelType, form]);
 
-  const [stringQs, setStringQs] = useState("");
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
@@ -84,7 +82,7 @@ const CreateChannelModal = () => {
           serverId: params?.serverid,
         },
       });
-      setStringQs(url);
+
       await axios.post(url, values);
 
       form.reset();
@@ -99,8 +97,6 @@ const CreateChannelModal = () => {
     form.reset();
     onClose();
   };
-
-  console.log("qs", stringQs);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
