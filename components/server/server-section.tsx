@@ -11,7 +11,7 @@ interface ServerSectionProps {
   label: string;
   role: MemberRole | undefined;
   sectionType: "channels" | "members";
-  channelType: ChannelType;
+  channelType?: ChannelType;
   server?: ServerWithMembersWithProfiles;
 }
 
@@ -19,8 +19,8 @@ const ServerSection = ({
   label,
   role,
   sectionType,
-  channelType,
   server,
+  channelType,
 }: ServerSectionProps) => {
   const { onOpen } = useModal();
 
@@ -30,9 +30,9 @@ const ServerSection = ({
         {label}
       </p>
       {role !== MemberRole.GUEST && sectionType === "channels" && (
-        <ActionTooltip label='Create Channek' side='top'>
+        <ActionTooltip label='Create Channel' side='top'>
           <button
-            onClick={() => onOpen("createChannel", { server })}
+            onClick={() => onOpen("createChannel", { channelType })}
             className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 transition'
           >
             <Plus className='h-4 w-4' />
@@ -41,7 +41,7 @@ const ServerSection = ({
       )}
 
       {role == MemberRole.GUEST && sectionType === "members" && (
-        <ActionTooltip label='Create Channek' side='top'>
+        <ActionTooltip label='Manage Members' side='top'>
           <button
             onClick={() => onOpen("manageMembers", { server })}
             className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 transition'
