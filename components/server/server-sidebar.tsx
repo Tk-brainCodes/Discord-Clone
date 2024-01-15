@@ -1,5 +1,3 @@
-import React from "react";
-
 import { currentProfile } from "@/lib/current-profile";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -12,6 +10,7 @@ import ServerHeader from "./server-header";
 import ServerSearch from "./server-search";
 import ServerSection from "./server-section";
 import ServerChannel from "./server-channel";
+import ServerMember from "./server-member";
 
 interface ServerSideProps {
   serverId: string;
@@ -72,7 +71,7 @@ const SeverSidebar = async ({ serverId }: ServerSideProps) => {
     (channel) => channel.type === ChannelType.AUDIO
   );
   const members = server?.members.filter(
-    (member) => member.profileId !== profile.id
+    (member) => member.profileId !== profile.id //check this line
   );
 
   if (!server) {
@@ -139,16 +138,18 @@ const SeverSidebar = async ({ serverId }: ServerSideProps) => {
               role={role}
               label='Text Channel'
             />
-            {textChannel.map((channel) => (
-              <>
-                <ServerChannel
-                  key={channel.id}
-                  channel={channel}
-                  server={server}
-                  role={role}
-                />
-              </>
-            ))}
+            <div className='space-y-[2px]'>
+              {textChannel.map((channel) => (
+                <>
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    server={server}
+                    role={role}
+                  />
+                </>
+              ))}
+            </div>
           </div>
         )}
         {!!audioChannel?.length && (
@@ -157,8 +158,65 @@ const SeverSidebar = async ({ serverId }: ServerSideProps) => {
               sectionType='channels'
               channelType={ChannelType.AUDIO}
               role={role}
-              label='Audio Channel'
+              label='Voice Channel'
             />
+            <div className='space-y-[2px]'>
+              {audioChannel.map((channel) => (
+                <>
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    server={server}
+                    role={role}
+                  />
+                </>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!!videoChannel?.length && (
+          <div className='mb-2'>
+            <ServerSection
+              sectionType='channels'
+              channelType={ChannelType.VIDEO}
+              role={role}
+              label='Video Channel'
+            />
+            <div className='space-y-[2px]'>
+              {videoChannel.map((channel) => (
+                <>
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    server={server}
+                    role={role}
+                  />
+                </>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!!members?.length && (
+          <div className='mb-2'>
+            <ServerSection
+              sectionType='members'
+              role={role}
+              label='members'
+              server={server}
+            />
+            <div className='spaxe-y-[2px]'>
+              {members.map((member) => (
+                <>
+                  <ServerMember
+                    key={member.id}
+                    member={member}
+                    server={server}
+                  />
+                </>
+              ))}
+            </div>
           </div>
         )}
       </ScrollArea>
