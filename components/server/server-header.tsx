@@ -18,7 +18,6 @@ import {
   Users,
   PlusCircle,
   Trash,
-  LogOut,
 } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 
