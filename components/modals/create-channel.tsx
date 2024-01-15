@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import qs from "query-string";
 import * as z from "zod";
@@ -49,8 +50,9 @@ const formSchema = z.object({
 
 const CreateChannelModal = () => {
   const router = useRouter();
-  const { isOpen, type, onClose } = useModal();
+  const { isOpen, type, onClose, data } = useModal();
   const params = useParams();
+  const { channelType } = data;
 
   const isModalOpen = isOpen && type === "createChannel";
 
@@ -58,11 +60,21 @@ const CreateChannelModal = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: ChannelType.TEXT,
+      type: channelType || ChannelType.TEXT,
     },
   });
 
   const isLoading = form.formState.isLoading;
+
+  useEffect(() => {
+    if (channelType) {
+      form.setValue("type", channelType);
+    } else {
+      form.setValue("type", ChannelType.TEXT);
+    }
+  }, [channelType, form]);
+
+  const [stringQs, setStringQs] = useState("");
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -72,6 +84,7 @@ const CreateChannelModal = () => {
           serverId: params?.serverid,
         },
       });
+      setStringQs(url);
       await axios.post(url, values);
 
       form.reset();
@@ -86,6 +99,8 @@ const CreateChannelModal = () => {
     form.reset();
     onClose();
   };
+
+  console.log("qs", stringQs);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
