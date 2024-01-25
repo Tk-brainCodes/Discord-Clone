@@ -33,7 +33,7 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   }
 
   if (!channel || !members) {
-    redirect("/");
+    return redirect("/");
   }
 
   return (
@@ -42,6 +42,7 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
         name={channel?.name}
         serverId={channel?.serverId}
         type='channel'
+        imageUrl=''
       />
     </div>
   );
