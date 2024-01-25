@@ -28,7 +28,7 @@ const ServerChannel = ({ channel, server, role }: ServerChannelProps) => {
   const { onOpen } = useModal();
 
   const onPageRoute = () => {
-    router.push(`/server/${params?.serverid}/channels/${channel.id}`);
+    return router.push(`/server/${params?.serverid}/channels/${channel.id}`);
   };
 
   const onAction = (e: React.MouseEvent, action: ModalType) => {
