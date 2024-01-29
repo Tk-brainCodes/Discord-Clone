@@ -3,6 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useModal } from "@/hooks/use-modal-store";
 import axios from "axios";
 import qs from "query-string";
 
@@ -21,6 +22,8 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
   const formSchema = z.object({
     content: z.string().min(1),
   });
+
+  const { onOpen } = useModal();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +60,7 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
                   <button
                     type='button'
                     className='absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zince-300 transition rounded-full p-1 flex items-center justify-center'
+                    onClick={() => onOpen("messageFile", { apiUrl, query })}
                   >
                     <Plus className='text-white dark:text-[#313338]' />
                   </button>
