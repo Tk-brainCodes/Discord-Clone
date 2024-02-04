@@ -17,6 +17,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
+import { ChatLoadingAnimation } from "@/assets";
 
 import UserAvatar from "@/components/user-avatar";
 import ActionTooltip from "@/components/action-tooltip";
@@ -190,7 +191,15 @@ const ChatItems = ({
                   "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1"
               )}
             >
-              {content}
+              {content.length === 0 ? (
+                <Image
+                  src={ChatLoadingAnimation}
+                  alt='loading-animation'
+                  className='w-8 h-5 mt-2'
+                />
+              ) : (
+                content
+              )}
               {isUpdated && !deleted && (
                 <span className='text-[10px] mx-2 text-zinc-500 dark:text-zinc-400'>
                   (edited)
