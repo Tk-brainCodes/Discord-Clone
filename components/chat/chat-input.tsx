@@ -1,6 +1,7 @@
 "use client";
 
 import * as z from "zod";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useModal } from "@/hooks/use-modal-store";
@@ -24,6 +25,7 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
   const formSchema = z.object({
     content: z.string().min(1),
   });
+  const router = useRouter();
 
   const { onOpen } = useModal();
 
@@ -36,14 +38,17 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
 
   const isLoading = form.formState.isLoading;
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
         url: apiUrl,
         query,
       });
 
-      axios.post(url, values);
+      await axios.post(url, values);
+
+      form.reset();
+      router.refresh();
     } catch (error) {
       console.log(error);
     }
