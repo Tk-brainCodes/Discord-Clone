@@ -36,8 +36,6 @@ const DeleteChannelModal = () => {
         },
       });
 
-      console.log("qs:", url);
-
       await axios.delete(url);
 
       onClose();
