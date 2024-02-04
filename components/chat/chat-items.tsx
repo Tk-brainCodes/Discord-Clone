@@ -10,11 +10,13 @@ import Image from "next/image";
 import { Member, Profile } from "@prisma/client";
 import { ShieldCheck, ShieldAlert, FileIcon, Edit, Trash } from "lucide-react";
 import { MemberRole } from "@prisma/client";
+import { useRouter, useParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useModal } from "@/hooks/use-modal-store";
 
 import UserAvatar from "@/components/user-avatar";
 import ActionTooltip from "@/components/action-tooltip";
@@ -57,9 +59,11 @@ const ChatItems = ({
   socketQuery,
 }: ChatItemProps) => {
   const fileType = fileUrl?.split(".").pop();
+  const { onOpen } = useModal();
+  const params = useParams();
+  const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,6 +73,14 @@ const ChatItems = ({
   });
 
   const isLoading = form.formState.isSubmitting;
+
+  const onMemberClick = () => {
+    if (member.id === currentMember.id) {
+      return;
+    }
+
+    router.push(`/server/${params?.serverid}/conversations/${member.id}`);
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
@@ -83,20 +95,6 @@ const ChatItems = ({
       window.removeEventListener("keydown", handleKeyDown);
     };
   });
-
-  useEffect(() => {
-    form.reset({
-      content: content,
-    });
-  }, [content]);
-
-  const isAdmin = currentMember.role === MemberRole.ADMIN;
-  const isModerator = currentMember.role === MemberRole.MODERATOR;
-  const isOwner = currentMember.id === member.id;
-  const canDeleteMessage = (deleted && isAdmin) || isModerator || isOwner;
-  const canEditMessage = !deleted && isOwner && !fileUrl;
-  const isPDF = fileType === "pdf" && fileUrl;
-  const isImage = !isPDF && fileUrl;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -114,16 +112,36 @@ const ChatItems = ({
     }
   };
 
+  useEffect(() => {
+    form.reset({
+      content: content,
+    });
+  }, [content]);
+
+  const isAdmin = currentMember.role === MemberRole.ADMIN;
+  const isModerator = currentMember.role === MemberRole.MODERATOR;
+  const isOwner = currentMember.id === member.id;
+  const canDeleteMessage = (deleted && isAdmin) || isModerator || isOwner;
+  const canEditMessage = !deleted && isOwner && !fileUrl;
+  const isPDF = fileType === "pdf" && fileUrl;
+  const isImage = !isPDF && fileUrl;
+
   return (
     <div className='relative group flex items-center hover:bg-black/5 p-4 transition w-full'>
       <div className='group flex gap-x-2 items-start w-full'>
-        <div className='cursor-pointer hover:drop-shadow-md transition'>
+        <div
+          onClick={onMemberClick}
+          className='cursor-pointer hover:drop-shadow-md transition'
+        >
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className='flex flex-col w-full'>
           <div className='flex items-center gap-x-2'>
             <div className='flex items-center'>
-              <p className='font-semibold text-sm hover:underline cursor-pointer'>
+              <p
+                onClick={onMemberClick}
+                className='font-semibold text-sm hover:underline cursor-pointer'
+              >
                 {member.profile.name}
               </p>
               <ActionTooltip label={member.role}>
@@ -229,7 +247,15 @@ const ChatItems = ({
             </ActionTooltip>
           )}
           <ActionTooltip label='Delete'>
-            <Trash className='cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition' />
+            <Trash
+              onClick={() =>
+                onOpen("deleteMessage", {
+                  apiUrl: `${socketUrl}/${id}`,
+                  query: socketQuery,
+                })
+              }
+              className='cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition'
+            />
           </ActionTooltip>
         </div>
       )}
