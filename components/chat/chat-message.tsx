@@ -1,10 +1,12 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useRef, ElementRef } from "react";
 import { format } from "date-fns";
 import { Member, Message, Profile } from "@prisma/client";
 import { useChatQuery } from "@/hooks/use-chat-query";
 import { Loader2, ServerCrash } from "lucide-react";
+import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
 
 import ChatWelcome from "./chat-welcome";
 import ChatItems from "./chat-items";
@@ -41,6 +43,11 @@ const ChatMessage = ({
   type,
 }: ChatMessageProps) => {
   const queryKey = `chat:${chatId}`;
+  const updateKey = `chat:${chatId}:messages`;
+  const addKey = `chat:${chatId}:messages:update`;
+
+  const chatRef = useRef<ElementRef<"div">>(null);
+  const bottomRef = useRef<ElementRef<"div">>(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useChatQuery({
@@ -49,6 +56,15 @@ const ChatMessage = ({
       paramKey,
       paramValue,
     });
+
+  useChatSocket({ queryKey, updateKey, addKey });
+  useChatScroll({
+    chatRef,
+    bottomRef,
+    loadMore: fetchNextPage,
+    shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+    count: data?.pages?.[0]?.items?.length ?? 0,
+  });
 
   if (status === "pending") {
     return (
@@ -74,35 +90,51 @@ const ChatMessage = ({
 
   return (
     <div
+      ref={chatRef}
       className='flex-1 flex-col py-4 overflow-auto
   '
     >
-      <div className='flex-1'>
-        <ChatWelcome type={type} name={name} />
-        <div className='flex flex-col-reverse mt-auto'>
-          {data?.pages.map((group, i) => (
-            <Fragment key={i}>
-              {group.items.map((message: MessageWithMembersWithProfiles) => (
-                <div key={message.id}>
-                  <ChatItems
-                    key={message.id}
-                    id={message.id}
-                    member={message.member}
-                    currentMember={member}
-                    content={message.content}
-                    fileUrl={message.fileUrl}
-                    deleted={message.deleted}
-                    timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-                    isUpdated={message.createdAt !== message.updatedAt}
-                    socketUrl={socketUrl}
-                    socketQuery={socketQuery}
-                  />
-                </div>
-              ))}
-            </Fragment>
-          ))}
+      {!hasNextPage && <div className='flex-1' />}
+      {!hasNextPage && <ChatWelcome type={type} name={name} />}
+
+      {hasNextPage && (
+        <div className='flex justify-center'>
+          {isFetchingNextPage ? (
+            <Loader2 className='h-6 w-6 text-zinc-500 animate-spin my-4' />
+          ) : (
+            <button
+              onClick={() => fetchNextPage()}
+              className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 text-xs my-4 dark:hover:text-zinc-300 transition'
+            >
+              Load previous messages
+            </button>
+          )}
         </div>
+      )}
+      <div className='flex flex-col-reverse mt-auto'>
+        {data?.pages?.map((group, i) => (
+          <Fragment key={i}>
+            {group?.items?.map((message: MessageWithMembersWithProfiles) => (
+              <div key={message.id}>
+                <ChatItems
+                  key={message.id}
+                  id={message.id}
+                  member={message.member}
+                  currentMember={member}
+                  content={message.content}
+                  fileUrl={message.fileUrl}
+                  deleted={message.deleted}
+                  timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                  isUpdated={message.createdAt !== message.updatedAt}
+                  socketUrl={socketUrl}
+                  socketQuery={socketQuery}
+                />
+              </div>
+            ))}
+          </Fragment>
+        ))}
       </div>
+      <div ref={bottomRef} className='' />
     </div>
   );
 };
