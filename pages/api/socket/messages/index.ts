@@ -1,35 +1,38 @@
 import { NextApiRequest } from "next";
+
 import { NextApiResponseToServer } from "@/types";
 import { currentProfilePages } from "@/lib/current-profile-pages";
 import { db } from "@/lib/db";
+
+//ADDING MESSAGES
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponseToServer
 ) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method is not allowed" });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
     const profile = await currentProfilePages(req);
     const { content, fileUrl } = req.body;
-    const { channelId, serverId } = req.query;
+    const { serverId, channelId } = req.query;
 
     if (!profile) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    if (!channelId) {
-      return res.status(400).json({ error: "Channel ID Missing" });
+    if (!serverId) {
+      return res.status(400).json({ error: "Server ID missing" });
     }
 
-    if (!serverId) {
-      return res.status(400).json({ error: "Server ID Missing" });
+    if (!channelId) {
+      return res.status(400).json({ error: "Channel ID missing" });
     }
 
     if (!content) {
-      return res.status(400).json({ error: "Content is missing" });
+      return res.status(400).json({ error: "Content missing" });
     }
 
     const server = await db.server.findFirst({
@@ -66,7 +69,7 @@ export default async function handler(
     );
 
     if (!member) {
-      return res.status(404).json({ message: "Members not found" });
+      return res.status(404).json({ message: "Member not found" });
     }
 
     const message = await db.message.create({
@@ -89,9 +92,9 @@ export default async function handler(
 
     res?.socket?.server?.io?.emit(channelKey, message);
 
-    res.status(200).json(message);
+    return res.status(200).json(message);
   } catch (error) {
-    console.log("[MESSAGE_POST]", error);
-    return res.status(500).json({ error: "Internal Error" });
+    console.log("[MESSAGES_POST]", error);
+    return res.status(500).json({ message: "Internal Error" });
   }
 }
