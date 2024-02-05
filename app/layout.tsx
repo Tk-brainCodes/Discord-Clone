@@ -33,7 +33,9 @@ export default function RootLayout({
           >
             <SocketProvider>
               <ModalProvider />
-              <QueryProvider>{children}</QueryProvider>
+              <QueryProvider>
+                <>{children}</>
+              </QueryProvider>
             </SocketProvider>
           </ThemeProvider>
         </body>
