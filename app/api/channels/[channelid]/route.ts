@@ -6,7 +6,7 @@ import { channel } from "diagnostics_channel";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { channelid: string } }
+  { params }: { params: { channelid?: string } }
 ) {
   const channelid =
     params.channelid === undefined
