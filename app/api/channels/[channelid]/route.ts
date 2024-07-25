@@ -6,8 +6,12 @@ import { channel } from "diagnostics_channel";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { channelid?: string } }
+  { params }: { params: { channelid: string } }
 ) {
+  const channelid =
+    params.channelid === undefined
+      ? "aa2c27c4-b21a-40e3-afcd-102f0778dec0"
+      : params.channelid;
   try {
     const profile = await currentProfile();
     const { searchParams } = new URL(req.url);
@@ -20,9 +24,6 @@ export async function DELETE(
     if (!serverId) {
       return new NextResponse("Server ID Missing", { status: 400 });
     }
-
-    const channelid =
-      params.channelid || "aa2c27c4-b21a-40e3-afcd-102f0778dec0";
 
     if (!channelid) {
       return new NextResponse("Channel ID Missing", { status: 400 });
@@ -63,6 +64,10 @@ export async function PATCH(
   req: Request,
   { params }: { params: { channelid: string } }
 ) {
+  const channelid =
+    params.channelid === undefined
+      ? "aa2c27c4-b21a-40e3-afcd-102f0778dec0"
+      : params.channelid;
   try {
     const profile = await currentProfile();
     const { searchParams } = new URL(req.url);
@@ -76,9 +81,6 @@ export async function PATCH(
     if (!serverId) {
       return new NextResponse("Server ID Missing", { status: 400 });
     }
-
-    const channelid =
-      params.channelid || "aa2c27c4-b21a-40e3-afcd-102f0778dec0";
 
     if (!channelid) {
       return new NextResponse("Channel ID Missing", { status: 400 });
