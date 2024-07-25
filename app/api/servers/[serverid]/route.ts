@@ -45,14 +45,14 @@ export async function PATCH(
 
   if (!profile) {
     return new NextResponse("Unauthorized", { status: 401 });
-  }
+  } 
 
   try {
     const server = await db.server.update({
       where: {
         id: params.serverid,
         profileId: profile.id,
-      },
+      }, 
       data: {
         name,
         imageUrl,
