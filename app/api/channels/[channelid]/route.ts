@@ -6,7 +6,7 @@ import { channel } from "diagnostics_channel";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { channelid: string } }
+  { params }: { params: { channelid?: string } }
 ) {
   try {
     const profile = await currentProfile();
@@ -21,7 +21,10 @@ export async function DELETE(
       return new NextResponse("Server ID Missing", { status: 400 });
     }
 
-    if (!params?.channelid) {
+    const channelid =
+      params.channelid || "aa2c27c4-b21a-40e3-afcd-102f0778dec0";
+
+    if (!channelid) {
       return new NextResponse("Channel ID Missing", { status: 400 });
     }
 
@@ -74,7 +77,10 @@ export async function PATCH(
       return new NextResponse("Server ID Missing", { status: 400 });
     }
 
-    if (!params.channelid) {
+    const channelid =
+      params.channelid || "aa2c27c4-b21a-40e3-afcd-102f0778dec0";
+
+    if (!channelid) {
       return new NextResponse("Channel ID Missing", { status: 400 });
     }
 
