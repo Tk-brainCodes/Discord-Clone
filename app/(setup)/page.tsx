@@ -2,9 +2,8 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial-profile";
 import InitialModal from "@/components/modals/initial-modal";
-import { GetServerSideProps } from "next";
 
-const SetupPage: GetServerSideProps = async () => {
+const SetupPage = async () => {
   const profile = await initialProfile();
 
   const server = await db.server.findFirst({

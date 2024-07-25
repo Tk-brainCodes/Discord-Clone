@@ -18,16 +18,25 @@ interface ChannelIdPageProps {
 
 const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   const profile = await currentProfile();
+  const channelId =
+    params.channelId === undefined
+      ? "aa2c27c4-b21a-40e3-afcd-102f0778dec0"
+      : params.channelId;
+
+  const serverId =
+    params.serverid === undefined
+      ? "aa2c27c4-b21a-40e3-afcd-102f0778dec0"
+      : params.serverid;
 
   const channel = await db.channel.findUnique({
     where: {
-      id: params.channelId,
+      id: channelId,
     },
   });
 
   const members = await db.member.findFirst({
     where: {
-      serverId: params.serverid,
+      serverId: serverId,
       profileId: profile?.id,
     },
   });
@@ -44,7 +53,7 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
     <div className='bg-white dark:bg-[#313338] flex flex-col h-full'>
       <ChatHeader
         name={channel?.name}
-        serverId={channel?.serverId}
+        serverId={serverId}
         type='channel'
         imageUrl=''
       />
@@ -53,33 +62,33 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
           <ChatMessage
             member={members}
             name={channel.name}
-            chatId={channel.id}
+            chatId={channelId}
             type='channel'
             apiUrl='/api/messages'
             socketUrl='/api/socket/messages'
             socketQuery={{
-              channelId: channel.id,
-              serverId: channel.serverId,
+              channelId: channelId,
+              serverId: serverId,
             }}
             paramKey='channelId'
-            paramValue={channel.id}
+            paramValue={channelId}
           />
 
           <ChatInput
             name={channel.name}
             type='channel'
             apiUrl='/api/socket/messages'
-            query={{ channelId: channel.id, serverId: channel.serverId }}
+            query={{ channelId: channelId, serverId: serverId }}
           />
         </>
       )}
 
       {channel.type === ChannelType.AUDIO && (
-        <MediaRoom chatId={channel.id} audio={true} video={false} />
+        <MediaRoom chatId={channelId} audio={true} video={false} />
       )}
 
       {channel.type === ChannelType.VIDEO && (
-        <MediaRoom chatId={channel.id} audio={true} video={true} />
+        <MediaRoom chatId={channelId} audio={true} video={true} />
       )}
     </div>
   );

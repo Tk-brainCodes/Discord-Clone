@@ -21,6 +21,15 @@ interface MemberIdPageProps {
 
 const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
   const profile = await currentProfile();
+  const memberId =
+    params.memberId === undefined
+      ? "aa2c27c4-b21a-40e3-afcd-102f0778dec0"
+      : params.memberId;
+
+  const serverId =
+    params.serverid === undefined
+      ? "aa2c27c4-b21a-40e3-afcd-102f0778dec0"
+      : params.serverid;
 
   if (!profile) {
     return redirectToSignIn();
@@ -28,7 +37,7 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
 
   const currentMember = await db.member.findFirst({
     where: {
-      serverId: params?.serverid,
+      serverId: serverId,
       profileId: profile.id,
     },
     include: {
@@ -42,11 +51,11 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
 
   const conversation = await getOrCreateConversation(
     currentMember?.id,
-    params?.memberId
+    memberId
   );
 
   if (!conversation) {
-    return redirect(`/server/${params?.serverid}`);
+    return redirect(`/server/${serverId}`);
   }
 
   const { memberOne, memberTwo } = conversation;
@@ -59,7 +68,7 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
       <ChatHeader
         imageUrl={currentMember?.profile?.imageUrl}
         name={currentMember?.profile?.name}
-        serverId={params?.serverid}
+        serverId={serverId}
         type='conversation'
       />
       {searchParams.video && (

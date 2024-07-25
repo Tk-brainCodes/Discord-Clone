@@ -1,5 +1,3 @@
-import React from "react";
-
 import { currentProfile } from "@/lib/current-profile";
 import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
@@ -14,6 +12,11 @@ interface InviteCodeProps {
 const InviteCode = async ({ params }: InviteCodeProps) => {
   const profile = await currentProfile();
 
+  const inviteCode =
+    params.inviteCode === undefined
+      ? "aa2c27c4-b21a-40e3-afcd-102f0778dec0"
+      : params.inviteCode;
+
   if (!profile) {
     return redirectToSignIn();
   }
@@ -24,7 +27,7 @@ const InviteCode = async ({ params }: InviteCodeProps) => {
 
   const existingServer = await db.server.findFirst({
     where: {
-      inviteCode: params.inviteCode,
+      inviteCode: inviteCode,
       members: {
         some: {
           profileId: profile.id,
